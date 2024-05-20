@@ -1,36 +1,3 @@
-
-# def inventory (user_id, user_data, monster, monster_inventory, item_inventory):
-#     print(f"\n========INVENTORY LIST (User ID: {user_id})=========")
-#     print(f"Jumlahh OWCA Coin-mu sekarang: {user_data['oc']}")
-
-#     count = 1
-#     if user_id in monster_inventory:
-#         for monster_data in monster_inventory[user_id]:
-#             monster_id = monster_data['monster_id']
-#             if monster_id in monster:
-#                 monster_details = monster[monster_id]
-#                 print(f"{count}. Monster (Name: {monster_details['type']}, Lvl: {monster_data['level']}, HP: {monster[monster_id]['hp']})")
-#                 count += 1
-    
-#     if user_id in item_inventory:
-#         for item in item_inventory[user_id]:
-#             print(f"{count}. Potion (Type: {item['type']}, Qty: {item['quantity']})")
-#             count += 1
-    
-#     pilihid = input("\n>>> Ketikkan id untuk menampilkan detail item:")
-#     if pilihid in monster_inventory:
-#         print("Jenis item: MONSTER")
-#         print("Name     :", monster_details['type'])
-#         print("ATK Power:", monster_details['atk_power'])
-#         print("DEF Power:", monster_details['def_power'])
-#         print("HP       :", monster_details['hp'])
-#         print("Level    :", monster_data['level'])
-
-#     elif pilihid in item_inventory:
-#         print("Jenis item: POTION")
-#         print("Name     :", item['type'])
-#         print("Quantity :", item['quantity'])
-
 def inventory(user_id, user_data, monster, monster_inventory, item_inventory):
     print(f"\n========INVENTORY LIST (User ID: {user_id})=========")
     print(f"Jumlah OWCA Coin-mu sekarang: {user_data['oc']}")
