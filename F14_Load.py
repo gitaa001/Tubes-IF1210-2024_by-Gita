@@ -8,6 +8,11 @@ parser.add_argument('Parent_Folder', metavar='folder', help='Masukkan Folder Pen
 args = parser.parse_args()
 folder = args.Parent_Folder
 
+if folder is None:
+    print("Tidak ada nama folder yang diberikan!")
+    print("Usage: python main.py <nama_folder>")
+    sys.exit()
+
 #Inisiasi Dictionary
 user={} #Dict user.csv
 monster={} #Dict monster.csv
