@@ -50,15 +50,11 @@ def split(str, separator):
     hasil.append(kata)
     return hasil
 
-# Prosedur read CSV
-def data(nama):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('Parent_Folder', metavar='folder', type=str, help='Masukkan Folder Penyimpanan')
-    args = parser.parse_args()
-    folder = args.Parent_Folder
-
-    with open(f'{folder}/{nama}.csv', 'r') as file:
-        data = file.read()
-    rows=split(data,"\n")
-
-    return rows
+# Prosedur header
+def print_centered_header(header):
+    terminal_width = shutil.get_terminal_size().columns
+    header_lines = header.split('\n')
+    
+    for line in header_lines:
+        padding_left = (terminal_width - len(line)) // 2
+        print(' ' * padding_left + line)
