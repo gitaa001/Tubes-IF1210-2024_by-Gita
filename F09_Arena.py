@@ -1,38 +1,167 @@
 from F00_RandomGenerator import *
-from F08_Battle import display_user_monsters
+from F08_Battle import *
 
-def battle_arena(player, enemy):
-    player_health = int(player['hp'])
-    enemy_health  = int(enemy['hp'])
-    while player_health > 0 and enemy_health > 0:
-        # Player menyerang
-        enemy_health -= int(player['atk_power'])
-        print(f"{player['type']} menyerang {enemy['type']}!")
+def combat_arena(user_id, user_data, player, monster, item_inventory, player_level, stage):
+    initial_enemy_hp = enemy['hp']
 
-        if enemy_health <= 0:
-            print(f"\nSelamat, Anda berhasil mengalahkan monster {enemy['type']} !!!\n")
-            return True  # Enemy kalah
+    key = str(interval(1, len(monster)))
+    lvl_monster = stage
+    enemy = monster[key]
+    enemy['atk_power'], enemy['def_power'], enemy['hp'] = upgrade_stat(enemy, str(lvl_monster))
+    print(r"""
+           _/\----/\   
+          /         \     /\
+         |  O    O   |   |  |
+         |  .vvvvv.  |   |  |
+         /  |     |   \  |  |
+        /   `^^^^^'    \ |  |
+      ./  /|            \|  |_
+     /   / |         |\__     /
+     \  /  |         |   |__|
+      `'   |  _      |
+        _.-'-' `-'-'.'_
+   __.-'               '-.__
+""")
+    print(f"RAWRRR, Monster {enemy['type']} telah muncul !!!")
+    print("Nama       :", enemy['type'])
+    print("ATK power  :", enemy['atk_power'])
+    print("DEF power  :", enemy['def_power'])
+    print("HP         :", enemy['hp'])
+    print("Level      :", lvl_monster)
+
+    turn = 1
+    potion_effects = [False, False, False]
+
+    while int(player['hp']) > 0 and int(enemy['hp']) > 0:
+        print(f"============ TURN {turn} ({player['type']}) ============")
+        pilih = menu("Attack", "Use Potion", "Quit")
+
+        if pilih == '1':
+            if player_attack(player, enemy, player_level):
+                print(f"\nSelamat, Anda berhasil mengalahkan monster {enemy['type']} !!!\n")
+                OC_reward = interval(10, 100)
+                print(f"Total OC yang diperoleh: {OC_reward}\n")
+                owca_coin = int(user_data['oc']) + OC_reward
+                user_data['oc'] = str(owca_coin)
+                return True, item_inventory
+
+        elif pilih == '2':
+            print("========POTION LIST===========")
+            potion_used = [False, False, False]
+            while True:
+                item_user = item_inventory[user_id]
+                sisa_potion1 = int(item_user[0]['quantity'])
+                sisa_potion2 = int(item_user[1]['quantity'])
+                sisa_potion3 = int(item_user[2]['quantity'])
+
+                print(f"1. Strength Potion (Qty: {sisa_potion1}) - Increases ATK Power")
+                print(f"2. Resilience Potion (Qty: {sisa_potion2}) - Increases DEF Power")
+                print(f"3. Healing Potion (Qty: {sisa_potion3}) - Restores Health")
+                print("4. Cancel")
+
+                perintah = input(">>> Pilih perintah: \n")
+
+                if perintah == '1':
+                    if sisa_potion1 > 0:
+                        if potion_used[0]:
+                            print('''Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia 
+                                    menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.''')
+                        else:
+                            print('''Setelah meminum ramuan ini, aura kekuatan terlihat 
+                            mengelilingi Pikachow dan gerakannya menjadi lebih cepat dan mematikan.''')
+                            potion_effects = efek_potion('strength', player)
+                            player['atk_power'] = potion_effects[0]
+                            sisa_potion1 -= 1
+                            potion_used[0] = True
+                    else:
+                        print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!")
+                        continue
+
+                elif perintah == '2':
+                    if sisa_potion2 > 0:
+                        if potion_used[1]:
+                            print('''Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia 
+                                    menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.''')
+                        else:
+                            print('''Setelah meminum ramuan ini, muncul sebuah energi pelindung di 
+                            sekitar Pikachow yang membuatnya terlihat semakin tangguh dan sulit dilukai.''')
+                            potion_effects = efek_potion('resilience', player)
+                            player['def_power'] = potion_effects[1]
+                            sisa_potion2 -= 1
+                            potion_used[1] = True
+                    else:
+                        print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!")
+                        continue
+
+                elif perintah == '3':
+                    if sisa_potion3 > 0:
+                        if potion_used[2]:
+                            print('''Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia 
+                                    menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.''')
+                        else:
+                            print('''Setelah meminum ramuan ini, luka-luka yang ada di dalam tubuh Pikachow sembuh
+                            dengan cepat. Dalam sekejap, Pikachow terlihat kembali prima dan siap melanjutkan pertempuran.''')
+                            potion_effects = efek_potion('healing', player)
+                            player['hp'] = potion_effects[2]
+                            sisa_potion3 -= 1
+                            potion_used[2] = True
+                    else:
+                        print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!")
+                        continue
+
+                elif perintah == '4':
+                    break
+
+                else:
+                    print("Item tidak tersedia!")
+
+                # Update penggunaan potion ke dalam dict 'item_inventory'
+                item_user[0]['quantity'] = sisa_potion1
+                item_user[1]['quantity'] = sisa_potion2
+                item_user[2]['quantity'] = sisa_potion3
+                item_inventory[user_id] = item_user
+
+                break
+
+        elif pilih == '3':
+            print("GAME OVER! Anda mengakhiri sesi latihan!")
+            return False, item_inventory
+
         else:
-            # Enemy menyerang
-            player_health -= int(enemy['atk_power'])
-            print(f"{enemy['type']} menyerang {player['type']}!")
+            print("Pilihan tidak tersedia!")
 
-    if player_health <= 0:
-        print(f"Yahhh, Anda dikalahkan monster {enemy['type']}. Jangan menyerah, coba lagi !!!")
-        return False  # Player kalah
+        print(f"============ TURN {turn} ({enemy['type']}) ============")
+        if enemy_attack(enemy, player, lvl_monster):
+            print(f"\nYahhh, Anda dikalahkan monster {enemy['type']}. Jangan menyerah, coba lagi !!!\n")
+            return False, item_inventory
 
-def arena(user_id, user_data, monster, monster_inventory):
-    print("Selamat datang di arena!!!")
+        turn += 1
+        enemy['hp'] =initial_enemy_hp 
+        return monster
 
-    print("\n======MONSTER LIST======")
-    # Menampilkan pilihan monster player sesuai kepemilikan di 'monster_inventory'
+def main_arena(user_id, user_data, monster, monster_inventory, item_inventory):
+    print("\n ======== SELAMAT DATANG DI ARENA!!! ==========")
     display_user_monsters(user_id, monster_inventory, monster)
+    pilih_monster = input(str(">> Pilih monster untuk bertarung: "))
 
     while True:
-        pilih_monster = input(str(">> Pilih monster untuk bertarung: "))
-        player = monster[pilih_monster]
-        player_level = monster_inventory[user_id][int(pilih_monster)]['level']
-        if pilih_monster in monster:
+        if int(pilih_monster) <= len(monster_inventory[user_id]):
+            player = monster[monster_inventory[user_id][int(pilih_monster) - 1]['monster_id']]
+            player_level = monster_inventory[user_id][int(pilih_monster) - 1]['level']
+            player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, str(player_level))
+            print(r'''
+          /\----/\_   
+         /         \   /|
+        |  | O    O | / |
+        |  | .vvvvv.|/  /
+       /   | |     |   /
+      /    | `^^^^^   /
+     | /|  |         /
+      / |    ___    |
+         \  |   |   |
+         |  |   |   |
+          \._\   \._\ 
+''')
             print("-----------------------------------------------------------")
             print(f"\nRAWRRR, Agent {user_data['username']} mengeluarkan monster {player['type']}!!!")
             print("Nama       :", player['type'])
@@ -41,44 +170,35 @@ def arena(user_id, user_data, monster, monster_inventory):
             print("HP         :", player['hp'])
             print("Level      :", player_level)
 
-            total_reward       = 0
-            successful_stages  = 0
+            total_reward = 0
+            successful_stages = 0
             total_damage_given = 0
             total_damage_taken = 0
 
-            for stage in range(1,6): #5 STAGE
-                    print(f"\n======== STAGE {stage} ==========")
+            for stage in range(1, 6):
+                print(f"\n============= STAGE {stage} ===============")
+                player_starting_hp = player['hp']
 
-                    # Spesifikasi monster musuh
-                    RNG_monster = interval(1, len(monster))
-                    x = str(RNG_monster)
-                    enemy = monster[x]
-                    print(f"\nRAWRRR, Monster {enemy['type']} telah muncul !!!")
-
-                    # Memulihkan HP player
-                    player_starting_hp = player['hp']
-
-                    if battle_arena(player, enemy):
-                        # Player menang
-                        total_reward += reward[str(stage)]
-                        successful_stages  += 1
-                        total_damage_given += int(player['atk_power'])
-                        total_damage_taken += int(enemy['atk_power'])
-                        print(f"STAGE CLEARED!! Anda mendapatkan {reward[str(stage)]} OC pada sesi ini!")
-                        if stage == 5:
-                            print("Selamat, Anda berhasil menyelesaikan seluruh stage Arena !!!")
-                        else:
-                            print("Memulai stage berikutnya...")
-
+                stage_result, item_inventory = combat_arena(user_id, user_data, player, monster, item_inventory, player_level, stage)
+                if stage_result:
+                    total_reward += reward[str(stage)]
+                    successful_stages += 1
+                    total_damage_given += int(player['atk_power'])
+                    total_damage_taken += int(monster[str(interval(1, len(monster)))]['atk_power'])
+                    print(f"STAGE CLEARED!! Anda mendapatkan {reward[str(stage)]} OC pada sesi ini!")
+                    if stage == 5:
+                        print("Selamat, Anda berhasil menyelesaikan seluruh stage Arena !!!")
                     else:
-                        # Player kalah
-                        total_damage_given += int(player['atk_power'])
-                        total_damage_taken += int(enemy['atk_power'])
-                        print(f"GAME OVER!! Sesi latihan berakhir pada stage {stage}.")
-                        break          
-                    
-                    # Memulihkan health player setelah setiap stage
-                    player['hp'] = player_starting_hp
+                        print("Memulai stage berikutnya...")
+                else:
+                    total_damage_given += int(player['atk_power'])
+                    total_damage_taken += int(monster[str(interval(1, len(monster)))]['atk_power'])
+                    print(f"GAME OVER!! Sesi latihan berakhir pada stage {stage}.")
+                    break
+
+                # Pulihkan karakter HP
+                player['hp'] = player_starting_hp
+                return monster
 
             print("\n======== STATS ARENA =========")
             print(f"Total hadiah    : {total_reward} OC")
@@ -86,19 +206,21 @@ def arena(user_id, user_data, monster, monster_inventory):
             print(f"Damage diberikan: {total_damage_given}")
             print(f"Damage diterima : {total_damage_taken}")
 
-            break
-
+            owca_coin = int(user_data['oc']) + total_reward
+            user_data['oc'] = str(owca_coin)
+            return user_data, item_inventory
+        
         else:
             print("Pilihan tidak tersedia!")
-
-        return total_reward
-     
+            
+# Reward OC per-stage
 reward = {
-        '1': 30, 
-        '2': 60, 
-        '3': 90, 
-        '4': 120,
-        '5': 150}
+    '1': 30, 
+    '2': 60, 
+    '3': 90, 
+    '4': 120,
+    '5': 150}
+     
 
 
 
