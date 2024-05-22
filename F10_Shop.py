@@ -63,7 +63,7 @@ def buy_item(user_id, shop, item_type, item_id, qty, oc, inventory, monster):
     else:
         print(f"Berhasil membeli {qty} {item['type']}. Item sudah masuk ke inventory-mu!")
         item["stock"] = str(int(item["stock"]) - qty)
-        new_potion_qty = int(inventory[user_id][item_id-1]['quantity']) + 1
+        new_potion_qty = int(inventory[user_id][item_id]['quantity']) + 1
         inventory[user_id][item_id-1]['quantity'] = str(new_potion_qty)
         # item_id - 1 karena berupa list, sehingga indexing dr 0
 
