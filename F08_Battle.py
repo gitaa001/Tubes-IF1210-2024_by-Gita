@@ -1,5 +1,6 @@
 from F00_RandomGenerator import *
 from user_interface import *
+import math
 
 # ------------ Efek Potion --------------
 def efek_potion(potion_effects, player):
@@ -50,7 +51,7 @@ def calculate_damage(attack, defense):
     return modified_damage
 
 def take_damage_monster(character, damage, level):
-    sisa_hp = float(character['hp']) - damage
+    sisa_hp = math.floor(float(character['hp']) - damage)
     if sisa_hp < 0:
         sisa_hp = 0
     
@@ -64,7 +65,7 @@ def take_damage_monster(character, damage, level):
     print(f"Level     : {level}")
 
 def take_damage_player(character, damage, level):
-    sisa_hp = float(character['hp']) - damage
+    sisa_hp = math.floor(float(character['hp']) - damage)
     if sisa_hp < 0:
         sisa_hp = 0
     
@@ -111,18 +112,17 @@ def display_user_monsters(user_id, monster_inventory, monster):
 
 # ----- Main Program Battle -----------
 def combat(user_id, user_data, monster, monster_inventory, item_inventory):
-    initial_enemy_hp = enemy['hp']
-
     # Randomize monster musuh dengan LCG
     RNG_monster = interval(1, len(monster))
     key = str(RNG_monster)
 
     lvl_monster = str(interval(1, 5))    
     enemy       = monster[key]
+    initial_enemy_hp = enemy['hp']
     enemy['atk_power'], enemy['def_power'], enemy['hp'] = upgrade_stat(enemy, lvl_monster)
 
     # Menampilkan spesifikasi monster musuh
-    print("\n _______ SELAMAT DATANG DI BATTLE!!! _______")
+    starter("=========== SELAMAT DATANG DI BATTLE!!! ============")
     print(r"""
            _/\----/\   
           /         \     /\
@@ -152,7 +152,7 @@ def combat(user_id, user_data, monster, monster_inventory, item_inventory):
         player = monster[pilih_monster]
         initial_player_hp = player['hp']
         player_level = monster_inventory[user_id][int(pilih_monster)-1]['level']
-        player['atk_power'], player['def_power'], player['hp']= upgrade_stat(player, player_level)
+        player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, player_level)
         if pilih_monster in monster:
             print(r'''
           /\----/\_   
@@ -178,128 +178,126 @@ def combat(user_id, user_data, monster, monster_inventory, item_inventory):
             turn = 1
             potion_used = [False, False, False] # List untuk validasi potion yg telah dipakai
             while int(player['hp']) > 0 and int(enemy['hp']) > 0:
-                    print(f"============ TURN {turn} ({player['type']}) ============")
-                    pilih = menu("Attack", "Use Potion", "Quit")
+                print(f"============ TURN {turn} ({player['type']}) ============")
+                pilih = menu("Attack", "Use Potion", "Quit")
 
-                    if pilih == '1':
-                        if player_attack(player, enemy, player_level):
-                            # Check apakah enemy telah dikalahkan
-                            print(f"\nSelamat, Anda berhasil mengalahkan monster {enemy['type']} !!!\n")
+                if pilih == '1':
+                    if player_attack(player, enemy, player_level):
+                        # Check apakah enemy telah dikalahkan
+                        print(f"\nSelamat, Anda berhasil mengalahkan monster {enemy['type']} !!!\n")
 
-                            OC_reward = interval(10, 100) # Perolehan hadiah OC
-                            print(f"Total OC yang diperoleh: {OC_reward}\n")
+                        OC_reward = interval(10, 100) # Perolehan hadiah OC
+                        print(f"Total OC yang diperoleh: {OC_reward}\n")
 
-                            # Update jumlah OC dalam dictionary 'user'
-                            owca_coin = int(user_data['oc']) + OC_reward
-                            user_data['oc'] = str(owca_coin)
-                            
-                            return user_data, item_inventory
+                        # Update jumlah OC dalam dictionary 'user'
+                        owca_coin = int(user_data['oc']) + OC_reward
+                        user_data['oc'] = str(owca_coin)
+                        enemy['hp']  = initial_enemy_hp
+                        return user_data, item_inventory, monster
 
-                    elif pilih == '2':
-                        print("========POTION LIST===========")
-                        
-                        while True:
-                            item_user = item_inventory[user_id]
-                            sisa_potion1 = int(item_user[0]['quantity'])
-                            sisa_potion2 = int(item_user[1]['quantity'])
-                            sisa_potion3 = int(item_user[2]['quantity'])
+                elif pilih == '2':
+                    print("========POTION LIST===========")
+                    
+                    item_user = item_inventory[user_id]
+                    sisa_potion1 = int(item_user[0]['quantity'])
+                    sisa_potion2 = int(item_user[1]['quantity'])
+                    sisa_potion3 = int(item_user[2]['quantity'])
 
-                            while True:
-                                print(f"1. Strength Potion (Qty: {sisa_potion1}) - Increases ATK Power")
-                                print(f"2. Resilience Potion (Qty: {sisa_potion2}) - Increases DEF Power")
-                                print(f"3. Healing Potion (Qty: {sisa_potion3}) - Restores Health")
-                                print("4. Cancel")
+                    while True:
+                        print(f"1. Strength Potion (Qty: {sisa_potion1}) - Increases ATK Power")
+                        print(f"2. Resilience Potion (Qty: {sisa_potion2}) - Increases DEF Power")
+                        print(f"3. Healing Potion (Qty: {sisa_potion3}) - Restores Health")
+                        print("4. Cancel")
 
-                                perintah = input(">>> Pilih perintah: \n")
+                        perintah = input(">>> Pilih perintah: \n")
 
-                                if perintah == '1':
-                                    if sisa_potion1 > 0:
-                                        if potion_used[0]:
-                                            print('''Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia 
-    menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.''')
-                                        else:
-                                            print('''Setelah meminum ramuan ini, aura kekuatan terlihat 
-    mengelilingi Pikachow dan gerakannya menjadi lebih cepat dan mematikan.''')
-                                            potion_effects = efek_potion('strength', player)
-                                            player['atk_power'] = potion_effects[0]
-                                            sisa_potion1 -= 1
-                                            potion_used[0] = True # Potion 1 telah dipakai
-                                            break
-                                            
-                                    else:
-                                        print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!")
-                                        continue
-
-                                elif perintah == '2':
-                                    if sisa_potion2 > 0:
-                                        if potion_used[1]:
-                                            print('''Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia 
-    menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.''')
-                                        else: 
-                                            print('''Setelah meminum ramuan ini, muncul sebuah energi pelindung di 
-    sekitar Pikachow yang membuatnya terlihat semakin tangguh dan sulit dilukai.''')
-                                            potion_effects = efek_potion('resilience', player)
-                                            player['def_power'] = potion_effects[1]
-                                            sisa_potion2 -= 1
-                                            potion_used[1] = True # Potion 2 telah dipakai
-                                            break
-                                            
-                                    else:
-                                        print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!")
-                                        continue
-
-                                elif perintah == '3':
-                                    if sisa_potion3 > 0:
-                                        if potion_used[2]:
-                                            print('''Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia 
-menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.''')
-                                        else:     
-                                            print('''Setelah meminum ramuan ini, luka-luka yang ada di dalam tubuh Pikachow sembuh
-dengan cepat. Dalam sekejap, Pikachow terlihat kembali prima dan siap melanjutkan pertempuran.''')
-                                            potion_effects = efek_potion('healing', player)
-                                            player['hp'] = potion_effects[2]
-                                            sisa_potion3 -= 1
-                                            potion_used[2] = True # Potion 3 telah dipakai
-                                            break
-                                            
-                                    else:
-                                        print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!")
-                                        continue
-
-                                elif perintah == '4':
-                                    break
-
+                        if perintah == '1':
+                            if sisa_potion1 > 0:
+                                if potion_used[0]:
+                                    print("Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia")
+                                    print("menolaknya seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.\n")
                                 else:
-                                    print("Item tidak tersedia!!!")
+                                    print("Setelah meminum ramuan ini, aura kekuatan terlihat mengelilingi")
+                                    print("Pikachow dan gerakannya menjadi lebih cepat dan mematikan.\n")
+                                    potion_effects = efek_potion('strength', player)
+                                    player['atk_power'] = potion_effects[0]
+                                    sisa_potion1 -= 1
+                                    potion_used[0] = True # Potion 1 telah dipakai
+                                    break
+                                    
+                            else:
+                                print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!\n")
+                                continue
 
-                            # Update quantity potion dalam dictionary 'item_inventory'
-                            item_user[0]['quantity'] = sisa_potion1
-                            item_user[1]['quantity'] = sisa_potion2
-                            item_user[2]['quantity'] = sisa_potion3
-                            item_inventory[user_id] = item_user
+                        elif perintah == '2':
+                            if sisa_potion2 > 0:
+                                if potion_used[1]:
+                                    print("Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia menolaknya")
+                                    print("seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.\n")
+                                else: 
+                                    print("Setelah meminum ramuan ini, muncul sebuah energi pelindung di")
+                                    print("sekitar Pikachow yang membuatnya terlihat semakin tangguh dan sulit dilukai.\n")
+                                    potion_effects = efek_potion('resilience', player)
+                                    player['def_power'] = potion_effects[1]
+                                    sisa_potion2 -= 1
+                                    potion_used[1] = True # Potion 2 telah dipakai
+                                    break
+                          
+                            else:
+                                print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!\n")
+                                continue
 
+                        elif perintah == '3':
+                            if sisa_potion3 > 0:
+                                if potion_used[2]:
+                                    print("Kamu mencoba memberikan ramuan ini kepada Pikachow, namun dia menolaknya")
+                                    print("seolah-olah dia memahami ramuan tersebut sudah tidak bermanfaat lagi.\n")
+                                else:     
+                                    print("Setelah meminum ramuan ini, luka-luka yang ada di dalam tubuh Pikachow sembuh dengan cepat.")
+                                    print("Dalam sekejap, Pikachow terlihat kembali prima dan siap melanjutkan pertempuran.\n")
+                                    potion_effects = efek_potion('healing', player)
+                                    player['hp'] = potion_effects[2]
+                                    sisa_potion3 -= 1
+                                    potion_used[2] = True # Potion 3 telah dipakai
+                                    break
+                            
+                            else:
+                                print("Wah, kamu sedang tidak memiliki ramuan ini, silahkan pilih ramuan lain!\n")
+                                continue
+
+                        elif perintah == '4':
                             break
 
-                    elif pilih == '3':
-                        print("Anda berhasil kabur dari BATTLE!")
-                        return user_data, item_inventory
+                        else:
+                            print("Item tidak tersedia!!!\n")
+                
+                    # Update quantity potion dalam dictionary 'item_inventory'
+                    item_user[0]['quantity'] = sisa_potion1
+                    item_user[1]['quantity'] = sisa_potion2
+                    item_user[2]['quantity'] = sisa_potion3
+                    item_inventory[user_id] = item_user
 
-                    else:
-                        print("Pilihan tidak tersedia!")
+                elif pilih == '3':
+                    print("Anda berhasil kabur dari BATTLE!")
+                    loading("Keluar...")
+                    break
 
+                else:
+                    print("Pilihan tidak tersedia!")
+
+                if player['hp'] > 0 and enemy['hp'] > 0:
                     print(f"============ TURN {turn} ({enemy['type']}) ============")
                     if enemy_attack(enemy, player, lvl_monster):
                         print(f"\nYahhh, Anda dikalahkan monster {enemy['type']}. Jangan menyerah, coba lagi !!!\n")
-                   
-                        return user_data, item_inventory
-
-                    turn += 1
+                
+                turn += 1
 
         else:
-            print("Pilihan nomor tidak tersedia!")
+            print("Pilihan nomor tidak tersedia!\n")
     
         # Pulihkan karakter HP
         enemy['hp']  = initial_enemy_hp
         player['hp']  = initial_player_hp
 
-        return monster
+        return user_data, item_inventory, monster
+          
