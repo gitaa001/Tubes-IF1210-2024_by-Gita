@@ -1,18 +1,22 @@
 # SUBPROGRAM REGISTER
 
-import os
-import re
 from user_interface import *
+import re
 
 def is_valid_username(username):
     # Prosedur untuk memeriksa apakah username sesuai dengan kriteria
     pattern = r'^[a-zA-Z0-9_-]+$'
     return bool(re.match(pattern, username))
 
-def register(user, monster, monster_inventory: dict) -> dict :
-
+def register(user, monster, monster_inventory, logged_in_user):
     # Prosedur untuk melakukan registrasi
-    print("==== REGISTER ====\n")
+    if logged_in_user:
+        print(f"Register gagal!")
+        print(f"Anda telah login dengan username {logged_in_user['username']}, silahkan lakukan 'LOGOUT' sebelum melakukan register.")
+        return logged_in_user, user, monster_inventory
+
+    starter("")
+    print("\n========= REGISTER ===========\n")
     print("Selamat datang, Agent!\n")
     print("Silakan melakukan registrasi\n")
 
@@ -21,14 +25,15 @@ def register(user, monster, monster_inventory: dict) -> dict :
         username = input("Masukan username: ")
         password = input("Masukkan password: ")
 
-        if is_valid_username(username):
-            break
-        else:
-            print("Username hanya boleh berisi alfabet, angka, underscore, dan strip! \n")
+        if username in [user[u]['username'] for u in user]:
+            print(f"Username {username} sudah ada, silakan pilih username lain.\n")
+            continue
 
-        if username == user['username']:
-            print('Register gagal!')
-            print(f'Anda sudah log in dengan username {username}, silahkan lakukan "LOGOUT" sebelum melakukan login kembali.')
+        if not is_valid_username(username):
+            print("Username hanya boleh berisi alfabet, angka, underscore, dan strip!\n")
+            continue
+        
+        break
 
     # Menampilkan pilihan monster
     for key, value in monster.items():
@@ -50,17 +55,19 @@ def register(user, monster, monster_inventory: dict) -> dict :
         'username': username, 
         'password': password, 
         'role'    : 'agent', 
-        'oc'      : 0}
-    
+        'oc'      : '0'}
+
     new_user_id = str(len(user)+1)
     user[new_user_id] = new_user_data
 
-    user_id = new_user_id
-    user_data = new_user_data
+    new_monster_inventory = {
+        'monster_id': monster_choice,
+        'level'     : '1'
+    }
 
-    # ngetestttt
-    # print(user)
-    # print (user_id)
-    # print(user_data)
+    if new_user_id in monster_inventory:
+        monster_inventory[new_user_id].append(new_monster_inventory)
+    else:
+        monster_inventory[new_user_id] = [new_monster_inventory]
 
-    return user_id, user_data
+    return new_user_id, new_user_data, monster_inventory
