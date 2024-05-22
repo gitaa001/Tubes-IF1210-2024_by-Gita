@@ -1,13 +1,12 @@
-islogin = False
-
 def login(user):
-    global islogin
+    islogin = False
     user_id = None
     user_data = None
     
+    # Cek apakah pengguna sudah login sebelumnya
     if islogin:
         print("Login gagal!")
-        print(f'Anda sudah log in, silahkan lakukan "LOGOUT" sebelum melakukan login kembali.')
+        print(f'Anda sudah log in dengan username {user_data['username']}, silahkan lakukan "LOGOUT" sebelum melakukan login kembali.')
         return user_id, user_data
 
     while not islogin:
@@ -29,7 +28,7 @@ def login(user):
         if cekusername:
             if cekpassword:
                 print("Login Berhasil!")
-                islogin = True
+                islogin = True  # Set islogin menjadi True setelah berhasil login
                 break
 
             else:
