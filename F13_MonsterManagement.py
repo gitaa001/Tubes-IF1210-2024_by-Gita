@@ -32,13 +32,15 @@ def tambah_monster_baru(monster, new_monster_data):
 
 # Fungsi utama F13
 def monster_management(monster):
-    print("SELAMAT DATANG DI DATABASE PARA MONSTER !!!")
+    starter("--------------------------------------------")
+    print("\nSELAMAT DATANG DI DATABASE PARA MONSTER !!!")
     running = True  # Program akan berjalan selama running == True
     while running:
+        print("\n Monster Management:")
         print("1. Tampilkan semua Monster")
         print("2. Tambah monster baru")
         print("3. Keluar")
-        inp1 = input("Pilih Aksi : ")
+        inp1 = input("\n>>> Pilih Aksi : ")
         if inp1 == '1':
             print("\nID | TYPE | ATK POWER | DEF POWER | HP ")
             for id, data in monster.items():
@@ -49,13 +51,13 @@ def monster_management(monster):
                 print(f"{id} | {type} | {atk_power} | {def_power} | {hp} ")
 
         elif inp1 == '2':
-            print("Memulai pembuatan monster baru")
+            print("\n> Memulai pembuatan monster baru. . .")
 
             valid = False
             while not valid:
                 new_monster = input("Masukkan Type/Nama : ")
                 if not new_monster:
-                    print("Masukkan input yang valid")
+                    print("Masukkan input yang valid: ")
                 elif not dupecheck(new_monster, monster):
                     print("Monster sudah terdaftar di database!")
                 else:
@@ -65,7 +67,7 @@ def monster_management(monster):
             while not valid2:
                 atk_pow = input("Masukkan ATK Power : ")
                 if not atk_pow or not is_integer(atk_pow):
-                    print("Masukkan input bertipe Integer yang valid!")
+                    print("Masukkan input bertipe Integer yang valid!\n")
                 else:
                     valid2 = True
 
@@ -73,7 +75,7 @@ def monster_management(monster):
             while not valid3:
                 def_pow = input("Masukkan DEF Power: ")
                 if not def_pow or not is_integer(def_pow):
-                    print("Masukkan input bertipe Integer yang valid!")
+                    print("Masukkan input bertipe Integer yang valid!\n")
                 elif not (0 <= int(def_pow) <= 50):
                     print("DEF Power harus bernilai 0-50, coba lagi!")
                 else:
@@ -83,7 +85,7 @@ def monster_management(monster):
             while not valid4:
                 hp = input("Masukkan HP: ")
                 if not hp or not is_integer(hp):
-                    print("Masukkan input bertipe Integer yang valid!")
+                    print("Masukkan input bertipe Integer yang valid!\n")
                 else:
                     valid4 = True
 
@@ -96,8 +98,10 @@ def monster_management(monster):
                 monster = tambah_monster_baru(monster, new_monster_data)
 
         elif inp1 == '3':
+            loading('Keluar...')
             running = False
+            
         else:
-            print("Pilihan tidak valid. Silakan coba lagi.")
+            print("Pilihan tidak valid. Silakan coba lagi.\n")
 
     return monster
