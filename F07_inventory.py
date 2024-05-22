@@ -1,5 +1,7 @@
+from user_interface import *
+
 def inventory(user_id, user_data, monster, monster_inventory, item_inventory):
-    print(f"\n========INVENTORY LIST (User ID: {user_id})=========")
+    starter(f"\n========INVENTORY LIST (User ID: {user_id})=========")
     print(f"Jumlah OWCA Coin-mu sekarang: {user_data['oc']}")
 
     combined_list = [] # List untuk append item dalam 'monster_inventory' dan 'item_inventory'
@@ -38,27 +40,33 @@ def inventory(user_id, user_data, monster, monster_inventory, item_inventory):
     # Pilih item untuk menampilkan detail
     selected_item = None
     while True:
-        pilihid = int(input("\n>>> Pilih nomor item untuk melihat detail: "))
-        if 1 <= pilihid <= len(combined_list):
-            selected_item = combined_list[pilihid - 1]
-                # Menampilkan detail item yang dipilih
-            if selected_item['type'] == 'monster':
-                    print(f"\nDETAIL MONSTER")
-                    print(f"Name       : {selected_item['name']}")
-                    print(f"ATK Power  : {selected_item['ATK Power']}")
-                    print(f"DEF Power  : {selected_item['DEF Power']}")
-                    print(f"HP         : {selected_item['hp']}")
-                    print(f"Level      : {selected_item['level']}")
+        pilihid = input("\n>>> Pilih nomor item untuk melihat detail atau ketik 'back' untuk kembali ke menu utama: ")
+        
+        if pilihid.isdigit():
+            pilihid = int(pilihid)
+            if 1 <= int(pilihid) <= len(combined_list):
+                selected_item = combined_list[pilihid - 1]
+                    # Menampilkan detail item yang dipilih
+                if selected_item['type'] == 'monster':
+                        print(f"\nDETAIL MONSTER")
+                        print(f"Name       : {selected_item['name']}")
+                        print(f"ATK Power  : {selected_item['ATK Power']}")
+                        print(f"DEF Power  : {selected_item['DEF Power']}")
+                        print(f"HP         : {selected_item['hp']}")
+                        print(f"Level      : {selected_item['level']}")
 
-            elif selected_item['type'] == 'potion':
-                    print(f"\nDETAIL POTION")
-                    print(f"Type    : {selected_item['name']}")
-                    print(f"Quantity: {selected_item['quantity']}")
+                elif selected_item['type'] == 'potion':
+                        print(f"\nDETAIL POTION")
+                        print(f"Type    : {selected_item['name']}")
+                        print(f"Quantity: {selected_item['quantity']}")
 
         elif pilihid.lower() == 'back':
+            loading('Keluar...')
             break
 
         else:
             print("Pilihan tidak valid. Silakan masukkan nomor item yang sesuai.")
+            time.sleep(0.5)
+            
 
 
