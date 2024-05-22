@@ -1,5 +1,6 @@
 import os
-import argparse
+import shutil
+import time
 
 # KUMPULAN PROSEDUR TAMBAHAN UNTUK USER INTERFACE
 
@@ -7,10 +8,7 @@ import argparse
 def starter(*teks):
     '''Default Tampilan Program'''
 
-    # KAMUS LOKAL
     # teks = tampilan yang akan di masukkan sebagai starter
-
-    # ALGORITMA
     os.system('cls')
     # Menulis kalimat pada starter
     for i in teks:
@@ -22,11 +20,6 @@ def starter(*teks):
 def menu(*item:str) -> str:
     '''Menampilkan menu'''
 
-    # KAMUS LOKAL
-    # item  = str pilihan 'button' pada menu
-    # jwb   = str jawaban user
-
-    # ALGORITMA
     # Menampilkan pilihan menu
     for i in range(len(item)):
         print(f"{i+1}. {item[i]}")
@@ -37,19 +30,6 @@ def menu(*item:str) -> str:
     # RETURN
     return jwb
 
-# Prosedur split
-def split(str, separator):
-    hasil = []
-    kata = ''
-    for char in str:
-        if char == separator:
-            hasil.append(kata)
-            kata = ''
-        else:
-            kata += char
-    hasil.append(kata)
-    return hasil
-
 # Prosedur header
 def print_centered_header(header):
     terminal_width = shutil.get_terminal_size().columns
@@ -58,3 +38,11 @@ def print_centered_header(header):
     for line in header_lines:
         padding_left = (terminal_width - len(line)) // 2
         print(' ' * padding_left + line)
+
+# Prosedur loading
+def loading(*teks):
+    # teks yg akan ditampilkan sebagai efek loading
+    print(*teks)
+    for i in range (2):
+        print("")
+        time.sleep(0.5)
