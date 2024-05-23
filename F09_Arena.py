@@ -146,77 +146,79 @@ def combat_arena(user_id, user_data, player, monster, item_inventory, player_lev
 
 def main_arena(user_id, user_data, monster, monster_inventory, item_inventory):
     starter("\n ======== SELAMAT DATANG DI ARENA!!! ==========")
-    display_user_monsters(user_id, monster_inventory, monster)
-    pilih_monster = input(str(">> Pilih monster untuk bertarung: "))
+    
+    while True:  # Loop until a valid monster is selected
+        display_user_monsters(user_id, monster_inventory, monster)
+        pilih_monster = input(str(">> Pilih monster untuk bertarung: "))
 
-    if int(pilih_monster) <= len(monster_inventory[user_id]):
-        player = monster[monster_inventory[user_id][int(pilih_monster) - 1]['monster_id']]
-        player_level = monster_inventory[user_id][int(pilih_monster) - 1]['level']
-        player = player.copy()  # Make a copy to avoid altering the original
-        player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, str(player_level))
-        print(r'''
-          /\----/\_   
-         /         \   /|
-        |  | O    O | / |
-        |  | .vvvvv.|/  /
-       /   | |     |   /
-      /    | `^^^^^   /
-     | /|  |         /
-      / |    ___    |
-         \  |   |   |
-         |  |   |   |
-          \._\   \._\ 
-''')
-        print("-----------------------------------------------------------")
-        print(f"\nRAWRRR, Agent {user_data['username']} mengeluarkan monster {player['type']}!!!")
-        print("Nama       :", player['type'])
-        print("ATK power  :", player['atk_power'])
-        print("DEF power  :", player['def_power'])
-        print("HP         :", player['hp'])
-        print("Level      :", player_level)
+        if pilih_monster.isdigit() and 0 < int(pilih_monster) <= len(monster_inventory[user_id]):
+            player = monster[monster_inventory[user_id][int(pilih_monster) - 1]['monster_id']]
+            player_level = monster_inventory[user_id][int(pilih_monster) - 1]['level']
+            player = player.copy()  # Make a copy to avoid altering the original
+            player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, str(player_level))
+            print(r'''
+              /\----/\_   
+             /         \   /|
+            |  | O    O | / |
+            |  | .vvvvv.|/  /
+           /   | |     |   /
+          /    | `^^^^^   /
+         | /|  |         /
+          / |    ___    |
+             \  |   |   |
+             |  |   |   |
+              \._\   \._\ 
+    ''')
+            print("-----------------------------------------------------------")
+            print(f"\nRAWRRR, Agent {user_data['username']} mengeluarkan monster {player['type']}!!!")
+            print("Nama       :", player['type'])
+            print("ATK power  :", player['atk_power'])
+            print("DEF power  :", player['def_power'])
+            print("HP         :", player['hp'])
+            print("Level      :", player_level)
 
-        total_reward = 0
-        successful_stages = 0
-        total_damage_given = 0
-        total_damage_taken = 0
+            total_reward = 0
+            successful_stages = 0
+            total_damage_given = 0
+            total_damage_taken = 0
 
-        for stage in range(1, 6):
-            print(f"\n============= STAGE {stage} ===============")
-            player_starting_hp = player['hp']
+            for stage in range(1, 6):
+                print(f"\n============= STAGE {stage} ===============")
+                player_starting_hp = player['hp']
 
-            stage_result, item_inventory = combat_arena(user_id, user_data, player, monster, item_inventory, player_level, stage)
-            if stage_result:
-                total_reward += reward[str(stage)]
-                successful_stages += 1
-                total_damage_given += int(player['atk_power'])
-                total_damage_taken += int(monster[str(interval(1, len(monster)))]['atk_power'])
-                print(f"STAGE CLEARED!! Anda mendapatkan {reward[str(stage)]} OC pada sesi ini!")
-                if stage == 5:
-                    print("Selamat, Anda berhasil menyelesaikan seluruh stage Arena !!!")
+                stage_result, item_inventory = combat_arena(user_id, user_data, player, monster, item_inventory, player_level, stage)
+                if stage_result:
+                    total_reward += reward[str(stage)]
+                    successful_stages += 1
+                    total_damage_given += int(player['atk_power'])
+                    total_damage_taken += int(monster[str(interval(1, len(monster)))]['atk_power'])
+                    print(f"STAGE CLEARED!! Anda mendapatkan {reward[str(stage)]} OC pada sesi ini!")
+                    if stage == 5:
+                        print("Selamat, Anda berhasil menyelesaikan seluruh stage Arena !!!")
+                    else:
+                        print("Memulai stage berikutnya...")
                 else:
-                    print("Memulai stage berikutnya...")
-            else:
-                total_damage_given += int(player['atk_power'])
-                total_damage_taken += int(monster[str(interval(1, len(monster)))]['atk_power'])
-                print(f"GAME OVER!! Sesi latihan berakhir pada stage {stage}.")
-                break
+                    total_damage_given += int(player['atk_power'])
+                    total_damage_taken += int(monster[str(interval(1, len(monster)))]['atk_power'])
+                    print(f"GAME OVER!! Sesi latihan berakhir pada stage {stage}.")
+                    break
 
-            # Pulihkan karakter HP
-            player['hp'] = player_starting_hp
+                # Pulihkan karakter HP
+                player['hp'] = player_starting_hp
 
-        print("\n======== STATS ARENA =========")
-        print(f"Total hadiah    : {total_reward} OC")
-        print(f"Jumlah stage    : {successful_stages}")
-        print(f"Damage diberikan: {total_damage_given}")
-        print(f"Damage diterima : {total_damage_taken}")
+            print("\n======== STATS ARENA =========")
+            print(f"Total hadiah    : {total_reward} OC")
+            print(f"Jumlah stage    : {successful_stages}")
+            print(f"Damage diberikan: {total_damage_given}")
+            print(f"Damage diterima : {total_damage_taken}")
 
-        owca_coin = int(user_data['oc']) + total_reward
-        user_data['oc'] = str(owca_coin)
+            owca_coin = int(user_data['oc']) + total_reward
+            user_data['oc'] = str(owca_coin)
+            
+            return user_data, item_inventory, monster
 
-    else:
-        print("Pilihan tidak tersedia!")
-
-    return user_data, item_inventory, monster
+        else:
+            print("Pilihan tidak tersedia! Silakan pilih lagi.\n")
 
 reward = {
     '1': 30,
