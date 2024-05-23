@@ -1,3 +1,5 @@
+from F04_Help import help_before_login
+
 def login(user):
     islogin = False
     user_id = None
@@ -36,5 +38,12 @@ def login(user):
                         
         else:
             print("Username Tidak Terdaftar!")
+            pilih = input("Belum punya akun? Silakan lakukan register (y/n): ")
+            if pilih.lower() == 'y':
+                help_before_login()
+                pilih = input("\n>>> Masukkan pilihan: ").lower()
+                break
+            else:
+                continue
 
     return user_id, user_data
