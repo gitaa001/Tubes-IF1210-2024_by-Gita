@@ -110,14 +110,14 @@ def display_user_monsters(user_id, monster_inventory, monster):
     else:
         print("Kamu tidak memiliki monster dalam inventory!")
 
-# ----- Main Program Battle -----------
+    # ----- Main Program Battle -----------
 def combat(user_id, user_data, monster, monster_inventory, item_inventory):
     # Randomize monster musuh dengan LCG
     RNG_monster = interval(1, len(monster))
     key = str(RNG_monster)
 
     lvl_monster = str(interval(1, 5))    
-    enemy       = monster[key]
+    enemy = monster[key]
     initial_enemy_hp = enemy['hp']
     enemy['atk_power'], enemy['def_power'], enemy['hp'] = upgrade_stat(enemy, lvl_monster)
 
@@ -145,35 +145,38 @@ def combat(user_id, user_data, monster, monster_inventory, item_inventory):
     print("Level      :", lvl_monster)
 
     # Menampilkan pilihan monster player sesuai kepemilikan di 'monster_inventory'
-    display_user_monsters(user_id, monster_inventory, monster)
-
     while True:
+        display_user_monsters(user_id, monster_inventory, monster)
         pilih_monster = input(str(">> Pilih monster untuk bertarung: "))
-        player = monster[pilih_monster]
-        initial_player_hp = player['hp']
-        player_level = monster_inventory[user_id][int(pilih_monster)-1]['level']
-        player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, player_level)
-        if pilih_monster in monster:
+        
+        if pilih_monster.isdigit() and 0 < int(pilih_monster) <= len(monster_inventory[user_id]):
+            player_monster_data = monster_inventory[user_id][int(pilih_monster)-1]
+            player_monster_id = player_monster_data['monster_id']
+            player = monster[player_monster_id]
+            initial_player_hp = player['hp']
+            player_level = player_monster_data['level']
+            player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, player_level)
+            
             print(r'''
-          /\----/\_   
-         /         \   /|
-        |  | O    O | / |
-        |  | .vvvvv.|/  /
-       /   | |     |   /
-      /    | `^^^^^   /
-     | /|  |         /
-      / |    ___    |
-         \  |   |   |
-         |  |   |   |
-          \._\   \._\ 
-''')
+              /\----/\_   
+             /         \   /|
+            |  | O    O | / |
+            |  | .vvvvv.|/  /
+           /   | |     |   /
+          /    | `^^^^^   /
+         | /|  |         /
+          / |    ___    |
+             \  |   |   |
+             |  |   |   |
+              \._\   \._\ 
+    ''')
             print(f"RAWRRR, Agent {user_data['username']} mengeluarkan monster {player['type']}!!!")
             print("Nama       :", player['type'])
             print("ATK power  :", player['atk_power'])
             print("DEF power  :", player['def_power'])
             print("HP         :", player['hp'])
             print(f"Level     :", player_level) 
-              
+            
             # Skema 1V1 turn-based battle
             turn = 1
             potion_used = [False, False, False] # List untuk validasi potion yg telah dipakai
@@ -193,6 +196,7 @@ def combat(user_id, user_data, monster, monster_inventory, item_inventory):
                         owca_coin = int(user_data['oc']) + OC_reward
                         user_data['oc'] = str(owca_coin)
                         enemy['hp']  = initial_enemy_hp
+                        player['hp'] = initial_player_hp
                         return user_data, item_inventory, monster
 
                 elif pilih == '2':
@@ -292,12 +296,11 @@ def combat(user_id, user_data, monster, monster_inventory, item_inventory):
                 
                 turn += 1
 
-        else:
-            print("Pilihan nomor tidak tersedia!\n")
-    
-        # Pulihkan karakter HP
-        enemy['hp']  = initial_enemy_hp
-        player['hp']  = initial_player_hp
+            # Pulihkan karakter HP setelah pertarungan berakhir
+            enemy['hp'] = initial_enemy_hp
+            player['hp'] = initial_player_hp
 
-        return user_data, item_inventory, monster
-          
+            return user_data, item_inventory, monster
+
+        else:
+            print("Pilihan monster tidak tersedia!\n")
