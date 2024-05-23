@@ -30,6 +30,10 @@ def show_items(item_type, shop, monster):
 
 # Fungsi untuk membeli item
 def buy_item(user_id, shop, item_type, item_id, qty, oc, inventory, monster):
+    if str(item_id) not in shop:
+        print(f"Item dengan ID {item_id} tidak tersedia di shop.")
+        return False
+
     item = shop[str(item_id)]
 
     # Validasi pembelian monster
@@ -63,7 +67,7 @@ def buy_item(user_id, shop, item_type, item_id, qty, oc, inventory, monster):
     else:
         print(f"Berhasil membeli {qty} {item['type']}. Item sudah masuk ke inventory-mu!")
         item["stock"] = str(int(item["stock"]) - qty)
-        new_potion_qty = int(inventory[user_id][item_id]['quantity']) + 1
+        new_potion_qty = int(inventory[user_id][item_id]['quantity']) + qty
         inventory[user_id][item_id-1]['quantity'] = str(new_potion_qty)
         # item_id - 1 karena berupa list, sehingga indexing dr 0
 
@@ -94,8 +98,14 @@ def main_shop(user_id, user_data, monster_shop, item_shop, monster, monster_inve
                 shop = monster_shop
                 inventory = monster_inventory
                 show_items(item_type, shop, monster)
-                item_id = int(input(">>> Masukkan id monster: "))
+                while True:
+                    item_id = int(input(">>> Masukkan id monster: "))
+                    if str(item_id) in shop:
+                        break
+                    else:
+                        print("ID monster tidak tersedia. Silakan masukkan ID yang valid.")
                 qty = 1
+                
                 success = buy_item(user_id, shop, item_type, item_id, qty, oc, inventory, monster)
                 if success:
                     oc -= int(monster_shop[str(item_id)]["price"])
@@ -104,7 +114,12 @@ def main_shop(user_id, user_data, monster_shop, item_shop, monster, monster_inve
                 shop = item_shop
                 inventory = item_inventory
                 show_items(item_type, shop, monster)
-                item_id = int(input(">>> Masukkan id potion: "))
+                while True:
+                    item_id = int(input(">>> Masukkan id potion: "))
+                    if str(item_id) in shop:
+                        break
+                    else:
+                        print("ID potion tidak tersedia. Silakan masukkan ID yang valid.")
                 qty = int(input(">>> Masukkan jumlah: "))
                 success = buy_item(user_id, shop, item_type, item_id, qty, oc, inventory, monster)
                 if success:
