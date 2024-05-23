@@ -41,8 +41,12 @@ def login(user):
             pilih = input("Belum punya akun? Silakan lakukan register (y/n): ")
             if pilih.lower() == 'y':
                 help_before_login()
-                pilih = input("\n>>> Masukkan pilihan: ").lower()
-                break
+                while True:
+                    pilih = input("\n>>> Masukkan pilihan: ").lower()
+                    if pilih.lower() == 'register' or pilih.lower() == 'login':
+                        break
+                    else:
+                        continue
             else:
                 continue
 
