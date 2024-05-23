@@ -1,3 +1,4 @@
+from F13_MonsterManagement import is_integer
 not_monster_shop = {}
 not_item_shop = {}
 
@@ -72,7 +73,7 @@ def shop_management(user_data, monster, monster_shop, item_shop):
                     print('ID | TYPE | ATK POWER | DEF POWER | HP')
                     not_monster(monster, monster_shop)
                     
-                    for id, data in monster.items():
+                    for id, data in not_monster_shop.items():
                         type      = data['type']
                         atk_power = data['atk_power']
                         def_power = data['def_power']
@@ -83,11 +84,14 @@ def shop_management(user_data, monster, monster_shop, item_shop):
                     stok = input("Masukkan Stok Awal: ")
                     harga = input("Masukkan Harga: ")
 
-                    for id, data in not_monster_shop.items():
-                        if id_monster == id:
-                            tambah = {(id):{'stock': (stok), 'price': (harga)}}
-                            monster_shop.update(tambah)
-                            print('\nITEM BERHASIL DITAMBAHKAN KE SHOP')
+                    if is_integer(stok) and is_integer(harga) and is_integer(id_monster):
+                        for id, data in not_monster_shop.items():
+                            if id_monster == id:
+                                tambah = {(id):{'stock': (stok), 'price': (harga)}}
+                                monster_shop.update(tambah)
+                                print('\nITEM BERHASIL DITAMBAHKAN KE SHOP')
+                    else:
+                        print("Inputan harus berupa integer!")
 
 
                 elif sub_aksi == 'item':
@@ -101,13 +105,16 @@ def shop_management(user_data, monster, monster_shop, item_shop):
                     stok    = input('Masukkan Stok Awal: ')
                     harga   = input('Masukkan Harga: ')
 
-                    for id, data in not_item_shop.items():
-                        if id_item == id:
-                            type   = data['type']
-                            tambah = {(id):{'type': (type), 'stock': (stok), 'price': (harga)}}
-                            item_shop.update(tambah)
-                            print('\nITEM BERHASIL DITAMBAHKAN KE SHOP')
-                            break
+                    if is_integer(id_item) and is_integer(stok) and is_integer(harga):
+                        for id, data in not_item_shop.items():
+                            if id_item == id:
+                                type   = data['type']
+                                tambah = {(id):{'type': (type), 'stock': (stok), 'price': (harga)}}
+                                item_shop.update(tambah)
+                                print('\nITEM BERHASIL DITAMBAHKAN KE SHOP')
+                                break
+                    else:
+                        print("Inputan harus berupa integer!")
 
             elif aksi == 'ubah':
                 sub_aksi = input('\nApa yang mau diubah? (monster/item): ').lower()
@@ -118,19 +125,22 @@ def shop_management(user_data, monster, monster_shop, item_shop):
                     stok = input("Masukkan Stok Baru: ")
                     harga = input("Masukkan Harga Baru: ")
 
-                    if stok:
-                        monster_shop[id]['stock'] = stok
-                    if harga:
-                        monster_shop[id]['price'] = harga
+                    if is_integer(id) and is_integer(stok) and is_integer(harga):
+                        if stok:
+                            monster_shop[id]['stock'] = stok
+                        if harga:
+                            monster_shop[id]['price'] = harga
 
-                    if stok and harga:
-                        print(f"Monster telah berhasil diubah dengan stok baru sejumlah {stok} dan dengan harga baru {harga}")
-                    elif stok:
-                        print(f"Monster telah berhasil diubah dengan stok baru sejumlah {stok}")
-                    elif harga:
-                        print(f"Monster telah berhasil diubah dengan harga baru {harga}")
+                        if stok and harga:
+                            print(f"Monster telah berhasil diubah dengan stok baru sejumlah {stok} dan dengan harga baru {harga}")
+                        elif stok:
+                            print(f"Monster telah berhasil diubah dengan stok baru sejumlah {stok}")
+                        elif harga:
+                            print(f"Monster telah berhasil diubah dengan harga baru {harga}")
+                        else:
+                            print("Isi Stok/Harga yang ingin diubah")
                     else:
-                        print("Isi Stok/Harga yang ingin diubah")
+                        print("Inputan harus berupa integer!")
 
                 elif sub_aksi == 'item':
                     tampilkan_shop(sub_aksi, monster_shop, monster, item_shop)
@@ -139,19 +149,21 @@ def shop_management(user_data, monster, monster_shop, item_shop):
                     stok = input("Masukkan Stok Baru: ")
                     harga = input("Masukkan Harga Baru: ")
 
-                    if stok:
-                        item_shop[id]['stock'] = stok
-                    if harga:
-                        item_shop[id]['price'] = harga
+                    if is_integer(id) and is_integer(stok) and is_integer(harga):
+                        if stok:
+                            item_shop[id]['stock'] = stok
+                        if harga:
+                            item_shop[id]['price'] = harga
 
-                    if stok and harga:
-                        print(f"Item telah berhasil diubah dengan stok baru sejumlah {stok} dan dengan harga baru {harga}")
-                    elif stok:
-                        print(f"Item telah berhasil diubah dengan stok baru sejumlah {stok}")
-                    elif harga:
-                        print(f"Item telah berhasil diubah dengan harga baru {harga}")
-                    else:
-                        print("Isi Stok/Harga yang ingin diubah")
+                        if stok and harga:
+                            print(f"Item telah berhasil diubah dengan stok baru sejumlah {stok} dan dengan harga baru {harga}")
+                        elif stok:
+                            print(f"Item telah berhasil diubah dengan stok baru sejumlah {stok}")
+                        elif harga:
+                            print(f"Item telah berhasil diubah dengan harga baru {harga}")
+                        else:
+                            print("Isi Stok/Harga yang ingin diubah")
+                    print("Inputan harus berupa integer!")
 
             elif aksi == 'hapus':
                 sub_aksi = input('\nApa yang mau dihapus? (monster/item): ').lower()
@@ -159,24 +171,31 @@ def shop_management(user_data, monster, monster_shop, item_shop):
                     tampilkan_shop(sub_aksi, monster_shop, monster, item_shop)
 
                     id = input("\nMasukkan ID Monster: ")
-                    confirm = input('Apakah anda yakin ingin menghapus Monster dari shop (y/n)? ').lower()
-                    
-                    if confirm == 'y':
-                        del monster_shop[id]
-                        print("Monster berhasil dihapus dari shop")
+                    if is_integer(id):
+                        confirm = input('Apakah anda yakin ingin menghapus Monster dari shop (y/n)? ').lower()
+                        
+                        if confirm == 'y':
+                            del monster_shop[id]
+                            print("Monster berhasil dihapus dari shop")
+                        else:
+                            print("Penghapusan dibatalkan")
                     else:
-                        print("Penghapusan dibatalkan")
+                        print("Inputan harus berupa integer!")
+
                 elif sub_aksi == 'item':
                     tampilkan_shop(sub_aksi, monster_shop, monster, item_shop)
 
                     id = input("\nMasukkan ID Item: ")
-                    confirm = input('Apakah anda yakin ingin menghapus Item dari shop (y/n)? ').lower()
-                    
-                    if confirm == 'y':
-                        del item_shop[id]
-                        print("Item berhasil dihapus dari shop")
+                    if is_integer(id):
+                        confirm = input('Apakah anda yakin ingin menghapus Item dari shop (y/n)? ').lower()
+                        
+                        if confirm == 'y':
+                            del item_shop[id]
+                            print("Item berhasil dihapus dari shop")
+                        else:
+                            print("Penghapusan dibatalkan")
                     else:
-                        print("Penghapusan dibatalkan")
+                        print("Inputan harus berupa integer!")
 
             elif aksi == 'keluar':
                 print('Dadah Mr. Monogram!')
