@@ -44,7 +44,7 @@ def menu_agent(user_id, user_data, monster, monster_inventory, item_inventory, m
     islogin = True
     while islogin:
         print("\n======== MENU UTAMA =========")
-        print(f"\n>>> Ohayou, Agent {user_data['username']}! Silakan pilih menu berikut:")
+        print(f"\n>>> Ohayou, Agent {user_data['username']}! Silakan pilih menu berikut tau ketik 'exit' untuk mengakhiri perjalananmu.")
 
         pilih_aksi = menu("Battle: Bertarung melawan monster", "Arena: Tingkatkan kemampuan agent dengan latihan!", "Inventory: Lihat owca-dex yang kamu miliki", "Shop: Beli item baru", "Laboratory: Tingkatkan level monster", "Help", "Logout")
         if pilih_aksi == '1':
@@ -87,9 +87,9 @@ def menu_agent(user_id, user_data, monster, monster_inventory, item_inventory, m
 def menu_admin(user_id, user_data, monster, monster_inventory, item_inventory, monster_shop, item_shop): 
     islogin = True
     while islogin:
-        print("============= MENU ADMIN ==============")
-        print(f"\nOhayou, Admin {user_data['username']}! Silakan pilih akses:")
-        pilih_aksi = menu("Shop Management", "Monster Management", "Help", "Back")
+        print("\n============= MENU ADMIN ==============")
+        print(f"\nOhayou, Admin {user_data['username']}! Silakan pilih akses atau ketik 'exit' untuk mengakhiri perjalananmu.")
+        pilih_aksi = menu("Shop Management", "Monster Management", "Help")
         if pilih_aksi == '1':
             shop_management(user_data, monster, monster_shop, item_shop)
 
@@ -97,7 +97,7 @@ def menu_admin(user_id, user_data, monster, monster_inventory, item_inventory, m
             monster = monster_management(monster)
 
         elif pilih_aksi == '3':
-            help_as_admin(user_id, user_data)
+            help_as_admin(user_data)
             pilih = input("\n>>> Masukkan pilihan: ")
 
             if pilih.lower() == "logout":
@@ -152,10 +152,16 @@ while True:
 
         elif pilih == "login":
             user_id, user_data = login(user)
+            logged_in_user = user_data  # Update logged_in_user dengan data pengguna yang login
+
             if user_id and user_data:
-                logged_in_user = user_data  # Update logged_in_user dengan data pengguna yang login
                 if user_data['role'] == 'agent':
                     logged_out = menu_agent(user_id, user_data, monster, monster_inventory, item_inventory, monster_shop, item_shop)
+                    if logged_out:
+                        logged_in_user = None  # Reset status login setelah logout
+                        continue
+                elif user_data['role'] == 'admin':
+                    logged_out = menu_admin(user_id, user_data, monster, monster_inventory, item_inventory, monster_shop, item_shop)
                     if logged_out:
                         logged_in_user = None  # Reset status login setelah logout
                         continue
