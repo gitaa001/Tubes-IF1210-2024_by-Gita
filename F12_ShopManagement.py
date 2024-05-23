@@ -1,4 +1,5 @@
 from F13_MonsterManagement import is_integer
+item = {1:{'type': 'Strength'},2:{'type': 'Resilience'},3:{'type': 'Healing'}}
 not_monster_shop = {}
 not_item_shop = {}
 
@@ -17,9 +18,9 @@ def not_monster(monster, monster_shop):
             tidak_ada = {(id):{'type':(type),'atk_power':(atk_power),'def_power':(def_power),'hp':(hp)}}
             not_monster_shop.update(tidak_ada)
             
-def not_item(item_inventory, item_shop):
-    global not_item_shop
-    for id, data in item_inventory.items():
+def not_item(item_shop):
+    item = {1:{'type': 'Strength'},2:{'type': 'Resilience'},3:{'type': 'Healing'}}
+    for id, data in item.items():
         ada = False
         for iditem, dataitem in item_shop.items():
             if id == iditem:
@@ -96,7 +97,7 @@ def shop_management(user_data, monster, monster_shop, item_shop):
 
                 elif sub_aksi == 'item':
                     print('ID | TYPE')
-                    not_item(item_inventory={}, item_shop=item_shop)  # Adjust as needed
+                    not_item(item_shop) # Adjust as needed
                     for id, data in not_item_shop.items():
                         type = data['type']
                         print(f'{id} | {type}')
