@@ -1,10 +1,12 @@
 import argparse
 import sys
 import os
+import time
 
-#Argparse untuk pemanggilan program
+
+# Argparse untuk pemanggilan program
 parser = argparse.ArgumentParser()
-parser.add_argument('Parent_Folder', metavar='folder', help='Masukkan Folder Penyimpanan')
+parser.add_argument('Parent_Folder', metavar='folder', nargs='?', help='Masukkan Folder Penyimpanan')
 args = parser.parse_args()
 folder = args.Parent_Folder
 
@@ -132,6 +134,11 @@ def monsters():
                 monster_shop[monster_id] = {'stock': stock, 'price': price}
 
 print("Loading ... ")
+
+for i in range (2):
+    print('.')
+    time.sleep(0.5)
+
 if not os.path.exists(folder) :
         print('Folder "%s" tidak ditemukan!'%folder)
         sys.exit()
