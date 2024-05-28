@@ -154,7 +154,6 @@ def main_arena(user_id, user_data, monster, monster_inventory, item_inventory):
         if pilih_monster.isdigit() and 0 < int(pilih_monster) <= len(monster_inventory[user_id]):
             player = monster[monster_inventory[user_id][int(pilih_monster) - 1]['monster_id']]
             player_level = monster_inventory[user_id][int(pilih_monster) - 1]['level']
-            player = player.copy()  # Make a copy to avoid altering the original
             player['atk_power'], player['def_power'], player['hp'] = upgrade_stat(player, str(player_level))
             print(r'''
               /\----/\_   
