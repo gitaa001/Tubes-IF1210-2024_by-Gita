@@ -5,7 +5,6 @@ from user_interface import *
 def combat_arena(user_id, user_data, player, monster, item_inventory, player_level, stage):
     key = str(interval(1, len(monster)))
     lvl_monster = stage
-    enemy = monster[key].copy()
     initial_enemy_hp = enemy['hp']
     enemy['atk_power'], enemy['def_power'], enemy['hp'] = upgrade_stat(enemy, str(lvl_monster))
     print(r"""
