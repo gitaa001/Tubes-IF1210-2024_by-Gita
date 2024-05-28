@@ -146,7 +146,7 @@ def combat_arena(user_id, user_data, player, monster, item_inventory, player_lev
 def main_arena(user_id, user_data, monster, monster_inventory, item_inventory):
     starter("\n ======== SELAMAT DATANG DI ARENA!!! ==========")
     
-    while True:  # Loop until a valid monster is selected
+    while True:  
         display_user_monsters(user_id, monster_inventory, monster)
         pilih_monster = input(str(">> Pilih monster untuk bertarung: "))
 
